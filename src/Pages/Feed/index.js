@@ -1,5 +1,7 @@
+/* eslint-disable no-underscore-dangle */
 import React, { useState, useEffect } from 'react';
 import './style.css';
+import io from 'socket.io-client';
 import api from '../../services/api';
 import more from '../../assets/more.svg';
 import like from '../../assets/like.svg';
@@ -8,6 +10,15 @@ import send from '../../assets/send.svg';
 
 function Feed() {
   const [posts, setPost] = useState([]);
+
+  function registerToSocket() {
+    const socket = io('http://localhost:3333');
+    socket.on('post', (newPost) => {
+      setPost([newPost, ...posts]);
+    });
+  }
+
+  registerToSocket();
 
   useEffect(() => {
     async function getPost() {
@@ -20,6 +31,7 @@ function Feed() {
         if (error) alert('Deu rium na request');
       }
     }
+
     getPost();
   }, []);
 
